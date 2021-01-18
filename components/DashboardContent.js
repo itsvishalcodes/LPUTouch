@@ -112,6 +112,9 @@ function DashboardContent(props) {
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity
+                        onPress = {() => props.navigationway.navigation.navigate("TimeTable", {
+                            attendanceData: props.attendanceData
+                        })}
                         style={styles.DashboardTile}
                         underlayColor='#fff'
                         >
