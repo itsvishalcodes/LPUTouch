@@ -40,6 +40,7 @@ import AnnouncementView from './screens/AnnouncementView'
 import Announcement from './screens/Announcement'
 import Message from './screens/Message'
 import AllMessage from './screens/AllMessageScreen'
+import TabNavigationTop from './screens/TabNavigationTop'
 
 
 const Stack = createStackNavigator();
@@ -60,6 +61,27 @@ const App = () => {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Details" component={DetailsScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="TabNavigator" component={TabNavigationTop}
+          options={{
+            title: "Assignment Marks",
+            headerStyle: {
+              backgroundColor: '#323334',
+              elevation: 0,
+              shadowColor: 'transparent',
+              shadowRadius: 0,
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+              fontSize: 18,
+              flexDirection: 'row',
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+              textAlign: "left"
+            },
+          }}  
+        />
         <Stack.Screen name="Attendance" component={AttendanceScreen}
           options={{
             title: "Attendance",

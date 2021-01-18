@@ -24,21 +24,21 @@ export default function AttendanceScreenBox(props) {
                     />
                 </View>
                 <View  style={{ flex: 1, justifyContent: 'center', paddingLeft: 12, paddingRight: 12}}>
-                        <Text style={{color: '#fff', fontSize: 18 }}>{props.courseCode}</Text>
-                        <Text numberOfLines={1} style={{color: '#fff', fontSize: 12 }}>{props.courseName}</Text>
-                        <Text numberOfLines={1} style={{color: '#909191', fontSize: 12 }}>Roll No: {props.rollNumber}</Text>
+                        <Text style={{color: '#fff', fontSize: 15 }}>{props.courseCode}</Text>
+                        <Text numberOfLines={1} style={{color: '#fff', fontSize: 10 }}>{props.courseName}</Text>
+                        <Text numberOfLines={1} style={{color: '#909191', fontSize: 9 }}>Roll No: {props.rollNumber}</Text>
                         
                 </View>
                 <View  style={{ flex:1, alignItems: 'flex-end', justifyContent: 'center', paddingLeft: 12, paddingRight: 18}}>
-                        <Text style={{color: '#fff', fontSize: 28 }}>{props.attendancePerc}% <Image
+                        <Text style={{color: '#fff', fontSize: 24 }}>{props.attendancePerc}% <Image
                             style={{width: 16, height: 16}}
                             source={
                                 require('../assets/icons/right-icon.png')
                             }
                         />
                         </Text>
-                        <Text numberOfLines={1} style={{color: '#909191', fontSize: 12 }}>Faculty: {props.facultyName}</Text>
-                        <Text numberOfLines={1} style={{color: '#909191', fontSize: 12 }}>({props.facultySeating})</Text>
+                        <Text numberOfLines={1} style={{color: '#909191', fontSize: 9 }}>Faculty: {props.facultyName}</Text>
+                        <Text numberOfLines={1} style={{color: '#909191', fontSize: 9 }}>({props.facultySeating})</Text>
                 </View>
         </TouchableOpacity>
     )
@@ -46,8 +46,8 @@ export default function AttendanceScreenBox(props) {
 
 const styles = StyleSheet.create({
     iconImage: {
-        height: 30,
-        width: 30
+        height: 24,
+        width: 24
     },
     AttendanceTile: {
         flexDirection: 'row',

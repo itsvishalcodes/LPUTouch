@@ -39,6 +39,7 @@ function DashboardContent(props) {
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity
+                        onPress={() => props.navigationway.navigation.navigate("TabNavigator")}
                         style={styles.DashboardTile}
                         underlayColor='#fff'
                         >

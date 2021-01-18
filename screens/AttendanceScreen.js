@@ -72,8 +72,9 @@ const AttendanceScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
     aggAttendance: {
-        fontSize: 35,
-        color: '#fff'
+        fontSize: 30,
+        color: '#fff',
+        marginLeft: 14
     },
     percSign: {
         fontSize: 19,
