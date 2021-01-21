@@ -57,6 +57,7 @@ function DashboardContent(props) {
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity
+                        onPress={() => props.navigationway.navigation.navigate("Results")}
                         style={styles.DashboardTileShort}
                         underlayColor='#fff'
                         >

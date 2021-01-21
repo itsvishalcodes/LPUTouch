@@ -42,6 +42,7 @@ import Message from './screens/Message'
 import AllMessage from './screens/AllMessageScreen'
 import TabNavigationTop from './screens/TabNavigationTop'
 import TimeTableScreen from './screens/TimeTableScreen'
+import Results from './screens/ResultsScreen'
 
 
 const Stack = createStackNavigator();
@@ -62,6 +63,27 @@ const App = () => {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Details" component={DetailsScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Results" component={Results}
+          options={{
+            title: "Results",
+            headerStyle: {
+              backgroundColor: '#323334',
+              elevation: 0,
+              shadowColor: 'transparent',
+              shadowRadius: 0,
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+              fontSize: 18,
+              flexDirection: 'row',
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+              textAlign: "left"
+            },
+          }}  
+        />
         <Stack.Screen name="TimeTable" component={TimeTableScreen}
           options={{
             title: "Time Table",
