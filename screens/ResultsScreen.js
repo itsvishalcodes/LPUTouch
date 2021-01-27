@@ -1,27 +1,68 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, ScrollView, StyleSheet, Dimensions } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, Dimensions, TouchableOpacity } from 'react-native'
 import FastImage from 'react-native-fast-image'
 
 import { LineChart } from 'react-native-chart-kit'
+
+function groupBy(list, keyGetter) {
+    const map = new Map();
+    list.forEach((item) => {
+         const key = keyGetter(item);
+         const collection = map.get(key);
+         if (!collection) {
+             map.set(key, [item]);
+         } else {
+             collection.push(item);
+         }
+    });
+    return map;
+}
+
+function CourseBox(props) {
+    return (
+        <View style={courseBoxStyle.courseBoxContainer}>
+            <View style={courseBoxStyle.courseDetails}>
+                <Text style={{color: '#fff', fontSize: 16}}>{props.courseCode}</Text>
+                <Text style={{color: '#fff', fontSize: 10}}>{props.courseName}</Text>
+            </View>
+            <View style={courseBoxStyle.courseGrade}>
+                <Text style={{color: '#fff', fontSize: 14}}>{props.grade}</Text>
+            </View>
+        </View>
+    )
+}
+
+function TermBox(props) {
+
+    const [activeTerm, setActiveTerm] = useState(null)
+
+    useEffect(() => {
+        setActiveTerm(props.activeTerm)
+    })
+
+    return (
+        <TouchableOpacity onPress={props.onPress} style={ activeTerm===props.TermId ? TermBoxStyles.TermBoxContainerActive : TermBoxStyles.TermBoxContainer} >
+            <Text style={TermBoxStyles.activeTermText}>{props.TermId}</Text>
+        </TouchableOpacity>
+    )
+}
 
 export default function Results() {
     const screenWidth = Dimensions.get("window").width;
 
     const [ resultData, setResultData ] = useState(null)
-    const [ marksData, setMarksData ] = useState(null)
+    const [ activeTerm, setActiveTerm ] = useState(null)
 
     let termIds = []
-    let MarksFiltered = []
-    let ResultFiltered = []
-    let tgpa = []
-    let romanTerm = []
+    let romanTerms = []
+    let tgpas = []
 
     const uid = `11910547`
     const accessToken = `7076e035-9ceb-457f-abee-f27fb45dd29c`
     const deviceId = `29904bc142b60dce`
 
     useEffect(() => {
-        if(resultData === null) {
+        if(resultData === null && activeTerm === null) {
             fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/StudentResultForService/${uid}/${accessToken}/${deviceId}`)
             .then(response => {
                 return response.text()
@@ -30,21 +71,11 @@ export default function Results() {
                     let dataReceived = JSON.parse(responseData)
                     setResultData(dataReceived)
             })
-            .then(() => {
-                fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/StudentResultMarksForService/${uid}/${accessToken}/${deviceId}`)
-                .then(response => {
-                    return response.text()
-                })
-                .then(responseData => {
-                    let dataReceived = JSON.parse(responseData)
-                    setMarksData(dataReceived)
-                })
-            })
             .catch((e) => alert(e))
         }
     })
 
-    if(marksData === null) {
+    if(resultData === null) {
         return (
             <View style={{flex: 1, backgroundColor: '#222324', alignItems: 'center', justifyContent: 'center'}}>
                 <FastImage
@@ -58,31 +89,43 @@ export default function Results() {
         )
     }
     else {
-        marksData.map((item) => {
-            termIds.push(item.Termid)
-        })
-        // console.log(termIds)
-        termIds.map((termId) => {
-            let tempResultFilter = resultData.filter(item => item.Termid == termId)
-            ResultFiltered.push(tempResultFilter)
-            let tempMarksFilter = marksData.filter(item => item.Termid == termId)
-            MarksFiltered.push(tempMarksFilter)
-            let temptgpa = resultData.find(element => element.Termid == termId)
-            temptgpa!=undefined ? tgpa.push(temptgpa.TermPercentOrTGPA.substring(7)) : null
-            temptgpa!=undefined ? romanTerm.push(temptgpa.RomanTerm) : null
-            // console.log(ResultFiltered)
-        })
+        function ifExists(arr, arr2, arr3) {
+            resultData.map(function(courseResult) {
+                if(arr.find(TermId => courseResult.Termid == TermId) === undefined) {
+                    arr.push(courseResult.Termid)
+                    arr2.push(courseResult.RomanTerm)
+                    arr3.push(courseResult.TermPercentOrTGPA.substring(7))
+                }
+            })
+        }
+        ifExists(termIds, romanTerms, tgpas)
+
+        if(activeTerm == null)
+            setActiveTerm(termIds[0])
+
+        const resultGrouped = groupBy(resultData, result => result.Termid)
+
+        const allTermBoxes = termIds.map((termId) => 
+            <TermBox key={termId} onPress={() => setActiveTerm(`${termId}`)} activeTerm={activeTerm} TermId={`${termId}`} />
+        )
+
+        console.log(`current active Term - ${activeTerm}`)
+        let allCoursesGrade = null
+        if(activeTerm != null) {
+            allCoursesGrade = resultGrouped.get(activeTerm).map((course) => <CourseBox courseCode={course.CourseCode} grade={course.GradeOrMarks.substring(8)} courseName={course.Course.split(':: ')[1]} />)
+        }
+
         return (
             <View style={styles.resultContainer}>
-                <View style={{ paddingLeft: 15, paddingRight: 15, width: '100%', height:255, backgroundColor: '#323334', borderBottomLeftRadius: 30, borderBottomRightRadius: 30}}>
+                <View style={{ paddingLeft: 15, paddingRight: 15, width: '100%', height:330, backgroundColor: '#323334', borderBottomLeftRadius: 30, borderBottomRightRadius: 30}}>
                     <Text style={styles.aggAttendance}>7.80<Text style={styles.percSign}>  CGPA
                     </Text></Text>
                     <LineChart
                         data={{
-                            labels: romanTerm,
+                            labels: romanTerms,
                             datasets: [
                                 {
-                                    data: tgpa
+                                    data: tgpas
                                 }
                             ]
                         }}
@@ -91,8 +134,8 @@ export default function Results() {
                         xLabelsOffset = {-10}
                         yLabelsOffset = {10}
                         chartConfig = {{
-                            backgroundGradientFrom: "#43A4E3",
-                            backgroundGradientTo: "#9D43E3",
+                            backgroundGradientFrom: "#6C1AF2",
+                            backgroundGradientTo: "#0FA1EF",
                             color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                             labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                             style: {
@@ -110,6 +153,16 @@ export default function Results() {
                             borderRadius: 14
                         }}
                     />
+                    <Text style={{color: '#929394'}}>Terms:</Text>
+                    <ScrollView horizontal={true}>
+                        {allTermBoxes}
+                    </ScrollView>
+                </View>
+                <View style={styles.GradeContainer}>
+                    <ScrollView style={{marginBottom: 315}}>
+                        <Text style={styles.TGPAText}>{ allCoursesGrade===null ? null : resultGrouped.get(activeTerm)[0].TermPercentOrTGPA }</Text>
+                        { allCoursesGrade===null ? null : allCoursesGrade }
+                    </ScrollView>
                 </View>
             </View>
         )
@@ -134,4 +187,75 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: '#909191'
     },
+    GradeContainer: {
+        padding: 15,
+        
+    },
+    TGPAText: {
+        color: '#929394',
+        fontSize: 18,
+        marginBottom: 10
+    }
+})
+
+let TermBoxStyles = StyleSheet.create({
+    TermBoxContainer: {
+        height: 40,
+        borderRadius: 4,
+        marginLeft: 10,
+        marginRight: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderColor: '#fff',
+        borderWidth: 2,
+        paddingLeft: 6,
+        paddingRight: 6,
+        marginTop: 6
+    },
+    activeTermText: {
+        fontSize: 18,
+        color: '#fff',
+        fontWeight: 'bold'
+    },
+    TermBoxContainerActive: {
+        height: 40,
+        borderRadius: 12,
+        marginLeft: 10,
+        marginRight: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderColor: '#fff',
+        borderWidth: 2,
+        backgroundColor: '#ff5334',
+        paddingLeft: 6,
+        paddingRight: 6,
+        marginTop: 6
+    },
+})
+
+const courseBoxStyle = StyleSheet.create({
+    courseBoxContainer: {
+        flexDirection: 'row',
+        backgroundColor: '#323334',
+        height: 70,
+        width: '100%',
+        marginBottom: 15,
+        borderRadius: 15,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    courseDetails: {
+        flex: 4,
+        justifyContent: 'center',
+        paddingLeft: 10
+    },
+    courseGrade: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#ff5334',
+        height: 40,
+        width: 40,
+        marginRight: 10,
+        borderRadius: 20
+    }
 })

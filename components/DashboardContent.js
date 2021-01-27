@@ -74,6 +74,23 @@ function DashboardContent(props) {
                             <Text style={styles.tileName}>Results</Text>
                         </View>
                     </TouchableOpacity>
+                    <TouchableOpacity
+                    onPress={() => props.navigationway.navigation.navigate('Marks')}
+                        style={styles.DashboardTileShort}
+                        underlayColor='#fff'
+                        >
+                        <View style={styles.iconContainer}>
+                            <Image 
+                                style={styles.iconImage}
+                                source={
+                                    require('../assets/icons/test.png')
+                                }
+                            />
+                        </View>
+                        <View style={styles.tileTextContainerShort}>
+                            <Text style={{fontSize: 19, color: '#929394'}}>Marks</Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.TileContainerRight}>
                     <TouchableOpacity
@@ -189,11 +206,13 @@ const styles=StyleSheet.create({
     tileTextDataShort: {
         color: "#fff",
         fontSize: 25,
-        justifyContent: 'center'
+        justifyContent: 'center',
+        alignItems: 'flex-end'
     },
     tileTextContainerShort: {
         flex: 5,
-        alignItems: 'flex-end'
+        alignItems: 'flex-end',
+        justifyContent: 'flex-end'
     }   
 })
 

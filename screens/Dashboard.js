@@ -113,7 +113,7 @@ function Dashboard({navigation}) {
         }
         else {
             upcomingLectureData = data[0].TimeTable.map(function(upcomingData) {
-                return <DashboardUpcomingLectures key={upcomingData.AttendanceTime} courseName={getCourseName(upcomingData.CourseCode).courseName} courseAttendance={courseDetails.courseAttendance} ifUpcoming={upcomingData.AttendanceType} courseCode={upcomingData.CourseCode} roomNo={upcomingData.RoomNumber} startTime={upcomingData.AttendanceTime.substring(0, 2)} endTime={upcomingData.AttendanceTime.substring(3, 5)} />
+                return <DashboardUpcomingLectures key={upcomingData.AttendanceTime} courseName={getCourseName(upcomingData.CourseCode).courseName} courseAttendance={courseDetails.courseAttendance} ifUpcoming={upcomingData.AttendanceType} courseCode={upcomingData.CourseCode} roomNo={upcomingData.RoomNumber} startTime={upcomingData.AttendanceTime.substring(0, 2)} endTime={upcomingData.AttendanceTime.substring(3, 5)} timeofDay={upcomingData.AttendanceTime.substring(6, 8)} />
             })
         }
         return (

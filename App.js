@@ -6,7 +6,8 @@
  * @flow strict-local
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-community/async-storage'
 import {
   SafeAreaView,
   StyleSheet,
@@ -14,8 +15,7 @@ import {
   View,
   Text,
   StatusBar,
-  Button,
-  AsyncStorage
+  Button
 } from 'react-native';
 
 import {
@@ -31,11 +31,8 @@ import { NavigationContainer, StackActions, DefaultTheme } from '@react-navigati
 import { createStackNavigator } from '@react-navigation/stack'
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
-import HomeScreen from './screens/HomeScreen'
-import DetailsScreen from './screens/DetailsScreen'
 import AttendanceScreen from './screens/AttendanceScreen'
 import Dashboard from './screens/Dashboard'
-import LoginScreen from './screens/LoginScreen'
 import AnnouncementView from './screens/AnnouncementView'
 import Announcement from './screens/Announcement'
 import Message from './screens/Message'
@@ -43,6 +40,10 @@ import AllMessage from './screens/AllMessageScreen'
 import TabNavigationTop from './screens/TabNavigationTop'
 import TimeTableScreen from './screens/TimeTableScreen'
 import Results from './screens/ResultsScreen'
+import Marks from './screens/MarksScreen'
+
+import LogInScreen from './screens/loginScreens/LogInScreen'
+import LoadingComponent from './components/LoadingComponent'
 
 
 const Stack = createStackNavigator();
@@ -50,211 +51,280 @@ const Drawer = createDrawerNavigator();
 
 const App = () => {
 
-  // const [UID, setUID] = useState(null)
+  // const [isFetchingUID, setIsFetchingUID] = useState(true)
 
-  // let initialRoute = "Dashboard"
-  // AsyncStorage.getItem('UID').then(UIDReceived => {setUID(UIDReceived)})
-  // if(UID==null) {
-  //   initialRoute="LoginScreen"
+  const [uid, setUID] = useState(null)
+  useEffect(() => {
+    const bootstrapAsync = async () => {
+      try {
+        // AsyncStorage.setItem('uido', '11910547')
+        // AsyncStorage.removeItem('uid')
+        setUID(await AsyncStorage.getItem('uido'))
+        // setIsFetchingUID(false)
+        console.log(uid)
+      } catch(e) {
+        alert('Unable to read data.')
+      }
+    }
+    bootstrapAsync()
+  }, [])
+
+  // if(isFetchingUID == true) {
+  //   return (
+  //     <LoadingComponent loadingText="Reading Data" />
+  //   )
   // }
-  return (
-      <NavigationContainer>
-      <Stack.Navigator initialRouteName={"Dashboard"}>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Details" component={DetailsScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Results" component={Results}
-          options={{
-            title: "Results",
-            headerStyle: {
-              backgroundColor: '#323334',
-              elevation: 0,
-              shadowColor: 'transparent',
-              shadowRadius: 0,
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-              fontSize: 18,
-              flexDirection: 'row',
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-              textAlign: "left"
-            },
-          }}  
-        />
-        <Stack.Screen name="TimeTable" component={TimeTableScreen}
-          options={{
-            title: "Time Table",
-            headerStyle: {
-              backgroundColor: '#323334',
-              elevation: 0,
-              shadowColor: 'transparent',
-              shadowRadius: 0,
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-              fontSize: 18,
-              flexDirection: 'row',
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-              textAlign: "left"
-            },
-          }}  
-        />
-        <Stack.Screen name="TabNavigator" component={TabNavigationTop}
-          options={{
-            title: "Assignment Marks",
-            headerStyle: {
-              backgroundColor: '#323334',
-              elevation: 0,
-              shadowColor: 'transparent',
-              shadowRadius: 0,
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-              fontSize: 18,
-              flexDirection: 'row',
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-              textAlign: "left"
-            },
-          }}  
-        />
-        <Stack.Screen name="Attendance" component={AttendanceScreen}
-          options={{
-            title: "Attendance",
-            headerStyle: {
-              backgroundColor: '#323334',
-              elevation: 0,
-              shadowColor: 'transparent',
-              shadowRadius: 0,
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-              fontSize: 18,
-              flexDirection: 'row',
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-              textAlign: "left"
-            },
-          }}  
-        />
-        <Stack.Screen name="AllMessage" component={AllMessage} 
-          options={{
-            title: "Messages",
-            headerStyle: {
-              backgroundColor: '#323334',
-              elevation: 0,
-              shadowColor: 'transparent',
-              shadowRadius: 0,
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-              fontSize: 18,
-              flexDirection: 'row',
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-              textAlign: "left"
-            },
-          }}
-        />
-        <Stack.Screen name="Message" component={Message} 
-          options={{
-            title: "Messages",
-            headerStyle: {
-              backgroundColor: '#323334',
-              elevation: 0,
-              shadowColor: 'transparent',
-              shadowRadius: 0,
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-              fontSize: 18,
-              flexDirection: 'row',
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-              textAlign: "left"
-            },
-          }}
-        />
-        <Stack.Screen name="AnnouncementView" component={AnnouncementView}
-          options={{
-            title: "Announcement",
-            headerStyle: {
-              backgroundColor: '#323334',
-              elevation: 0,
-              shadowColor: 'transparent',
-              shadowRadius: 0,
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-              fontSize: 18,
-              flexDirection: 'row',
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-              textAlign: "left"
-            },
-          }} />
-        <Stack.Screen name="Announcement" component={Announcement}
-          options={{
-            title: "Announcements",
-            headerStyle: {
-              backgroundColor: '#323334',
-              elevation: 0,
-              shadowColor: 'transparent',
-              shadowRadius: 0,
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-              fontSize: 18,
-              flexDirection: 'row',
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-              textAlign: "left"
-            },
-          }} 
-        />
-        <Stack.Screen name="Dashboard" component={Dashboard}
-          options={{ 
-            title: "LPU Touch",
-            headerStyle: {
-              backgroundColor: '#323334',
-              elevation: 0,
-              shadowColor: 'transparent',
-              shadowRadius: 0,
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-              fontSize: 15,
-              flexDirection: 'row',
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              textAlign: 'center'
-            },
-           }}
-        />
-      </Stack.Navigator>
-      </NavigationContainer>
 
-  );
+  if(uid==null) {
+    console.log("UID Null called")
+    return (
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName={"LogIn"}>
+          <Stack.Screen name="LogIn" component={LogInScreen} 
+            options={{ 
+              title: "LPU Touch",
+              headerStyle: {
+                backgroundColor: '#323334',
+                elevation: 0,
+                shadowColor: 'transparent',
+                shadowRadius: 0,
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: 15,
+                flexDirection: 'row',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center'
+              },
+            }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    )
+  }
+  else {
+    console.log("This also called")
+    return (
+        <NavigationContainer>
+        <Stack.Navigator initialRouteName={"Dashboard"}>
+          <Stack.Screen name="Dashboard" component={Dashboard}
+            options={{ 
+              title: "LPU Touch",
+              headerStyle: {
+                backgroundColor: '#323334',
+                elevation: 0,
+                shadowColor: 'transparent',
+                shadowRadius: 0,
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: 15,
+                flexDirection: 'row',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center'
+              },
+            }}
+          />
+          <Stack.Screen name="Marks" component={Marks}
+            options={{
+              title: "Marks",
+              headerStyle: {
+                backgroundColor: '#323334',
+                elevation: 0,
+                shadowColor: 'transparent',
+                shadowRadius: 0,
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: 18,
+                flexDirection: 'row',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                textAlign: "left"
+              },
+            }}  
+          />
+          <Stack.Screen name="Results" component={Results}
+            options={{
+              title: "Results",
+              headerStyle: {
+                backgroundColor: '#323334',
+                elevation: 0,
+                shadowColor: 'transparent',
+                shadowRadius: 0,
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: 18,
+                flexDirection: 'row',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                textAlign: "left"
+              },
+            }}  
+          />
+          <Stack.Screen name="TimeTable" component={TimeTableScreen}
+            options={{
+              title: "Time Table",
+              headerStyle: {
+                backgroundColor: '#323334',
+                elevation: 0,
+                shadowColor: 'transparent',
+                shadowRadius: 0,
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: 18,
+                flexDirection: 'row',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                textAlign: "left"
+              },
+            }}  
+          />
+          <Stack.Screen name="TabNavigator" component={TabNavigationTop}
+            options={{
+              title: "Assignment Marks",
+              headerStyle: {
+                backgroundColor: '#323334',
+                elevation: 0,
+                shadowColor: 'transparent',
+                shadowRadius: 0,
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: 18,
+                flexDirection: 'row',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                textAlign: "left"
+              },
+            }}  
+          />
+          <Stack.Screen name="Attendance" component={AttendanceScreen}
+            options={{
+              title: "Attendance",
+              headerStyle: {
+                backgroundColor: '#323334',
+                elevation: 0,
+                shadowColor: 'transparent',
+                shadowRadius: 0,
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: 18,
+                flexDirection: 'row',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                textAlign: "left"
+              },
+            }}  
+          />
+          <Stack.Screen name="AllMessage" component={AllMessage} 
+            options={{
+              title: "Messages",
+              headerStyle: {
+                backgroundColor: '#323334',
+                elevation: 0,
+                shadowColor: 'transparent',
+                shadowRadius: 0,
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: 18,
+                flexDirection: 'row',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                textAlign: "left"
+              },
+            }}
+          />
+          <Stack.Screen name="Message" component={Message} 
+            options={{
+              title: "Messages",
+              headerStyle: {
+                backgroundColor: '#323334',
+                elevation: 0,
+                shadowColor: 'transparent',
+                shadowRadius: 0,
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: 18,
+                flexDirection: 'row',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                textAlign: "left"
+              },
+            }}
+          />
+          <Stack.Screen name="AnnouncementView" component={AnnouncementView}
+            options={{
+              title: "Announcement",
+              headerStyle: {
+                backgroundColor: '#323334',
+                elevation: 0,
+                shadowColor: 'transparent',
+                shadowRadius: 0,
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: 18,
+                flexDirection: 'row',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                textAlign: "left"
+              },
+            }} />
+          <Stack.Screen name="Announcement" component={Announcement}
+            options={{
+              title: "Announcements",
+              headerStyle: {
+                backgroundColor: '#323334',
+                elevation: 0,
+                shadowColor: 'transparent',
+                shadowRadius: 0,
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: 18,
+                flexDirection: 'row',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                textAlign: "left"
+              },
+            }} 
+          />
+        </Stack.Navigator>
+        </NavigationContainer>
+
+    );
+  }
+  
 };
 
 const styles = StyleSheet.create({

@@ -22,7 +22,7 @@ function DashboardUpcomingLectures(props) {
                 </View>
                 <View style={styles.UpcomingLectureTime}>
                     <Text style={{color: '#fff'}}>{props.startTime}</Text>
-                    <Text style={{color: '#fff'}}>---</Text>
+                    <Text style={{color: '#fff', fontSize: 10}}>{props.timeofDay}</Text>
                     <Text style={{color: '#fff'}}>{props.endTime}</Text>
                 </View>
             </View>
