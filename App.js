@@ -51,16 +51,16 @@ const Drawer = createDrawerNavigator();
 
 const App = () => {
 
-  // const [isFetchingUID, setIsFetchingUID] = useState(true)
-
+  const [isFetchingUID, setIsFetchingUID] = useState(true)
   const [uid, setUID] = useState(null)
+
   useEffect(() => {
     const bootstrapAsync = async () => {
       try {
-        // AsyncStorage.setItem('uido', '11910547')
+        // AsyncStorage.setItem('uid', '11910547')
         // AsyncStorage.removeItem('uid')
-        setUID(await AsyncStorage.getItem('uido'))
-        // setIsFetchingUID(false)
+        setUID(await AsyncStorage.getItem('uid'))
+        setIsFetchingUID(false)
         console.log(uid)
       } catch(e) {
         alert('Unable to read data.')
@@ -69,11 +69,11 @@ const App = () => {
     bootstrapAsync()
   }, [])
 
-  // if(isFetchingUID == true) {
-  //   return (
-  //     <LoadingComponent loadingText="Reading Data" />
-  //   )
-  // }
+  if(isFetchingUID == true) {
+    return (
+      <LoadingComponent loadingText="Reading Data" />
+    )
+  }
 
   if(uid==null) {
     console.log("UID Null called")
