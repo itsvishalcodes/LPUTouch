@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { View, Text, ScrollView, StyleSheet, Dimensions, TouchableOpacity } from 'react-native'
 import FastImage from 'react-native-fast-image'
+
+import AuthContext from '../AuthContext'
 
 import { LineChart } from 'react-native-chart-kit'
 
@@ -48,6 +50,9 @@ function TermBox(props) {
 }
 
 export default function Results() {
+    let {studentData , setStudentData} = useContext(AuthContext)
+    studentData = JSON.parse(JSON.stringify(studentData))
+
     const screenWidth = Dimensions.get("window").width;
 
     const [ resultData, setResultData ] = useState(null)
@@ -57,13 +62,9 @@ export default function Results() {
     let romanTerms = []
     let tgpas = []
 
-    const uid = `11910547`
-    const accessToken = `7076e035-9ceb-457f-abee-f27fb45dd29c`
-    const deviceId = `29904bc142b60dce`
-
     useEffect(() => {
         if(resultData === null && activeTerm === null) {
-            fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/StudentResultForService/${uid}/${accessToken}/${deviceId}`)
+            fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/StudentResultForService/${studentData.uid}/${studentData.accessToken}/${studentData.deviceId}`)
             .then(response => {
                 return response.text()
             })

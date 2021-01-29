@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { View, Text, ScrollView, RefreshControl, Image } from 'react-native'
 import FastImage from 'react-native-fast-image'
+
+import AuthContext from '../AuthContext'
 
 import MessageBox from '../components/MessageBox'
 
 export default function AllMessage({navigation}) {
+    let {studentData , setStudentData} = useContext(AuthContext)
+    // studentData = JSON.parse(JSON.stringify(studentData))
 
     const [allMessageData, setAllMessageData] = useState(null)
     const [refreshing, setRefreshing] = useState(false)
@@ -18,9 +22,9 @@ export default function AllMessage({navigation}) {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        AccessToken: "7076e035-9ceb-457f-abee-f27fb45dd29c",
-                        deviceId: "29904bc142b60dce",
-                        LoginName: "11910547",
+                        AccessToken: studentData.accessToken,
+                        deviceId: studentData.deviceId,
+                        LoginName: studentData.uid,
                         Subject: "",
                         Description: ""
                     })
@@ -32,7 +36,7 @@ export default function AllMessage({navigation}) {
                     setAllMessageData(JSON.parse(response))
                     setRefreshing(false)
                 })
-                    .catch(e => alert(e))
+                .catch(e => alert(e))
         }
     })
 

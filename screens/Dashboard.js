@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { View, Text, Button, StyleSheet, StatusBar, Image, RefreshControl } from 'react-native'
+import React, { useState, useEffect, useContext } from 'react'
+import { View, Text, Button, StyleSheet, Image, RefreshControl } from 'react-native'
 
 import AsyncStorage from '@react-native-community/async-storage'
 import { ScrollView } from 'react-native-gesture-handler'
@@ -7,6 +7,9 @@ import { ScrollView } from 'react-native-gesture-handler'
 import LoadingComponent from '../components/LoadingComponent'
 import DashboardUpcomingLectures from '../components/DashboardUpcomingLectures'
 import DashboardContent from '../components/DashboardContent'
+
+import AuthContext from '../AuthContext'
+
 
 const wait = (timeout) => {
     return new Promise(resolve => {
@@ -16,51 +19,38 @@ const wait = (timeout) => {
 
 function Dashboard({navigation}) {
     console.log("Dashboard started")
-    const [uid, setUid] = useState('11910547')
-    const [accessToken, setAccessToken] = useState("7076e035-9ceb-457f-abee-f27fb45dd29c")
-    const [deviceId, setDeviceId] = useState("29904bc142b60dce")
+    // const [uid, setUid] = useState('11910547')
+    // const [accessToken, setAccessToken] = useState("7076e035-9ceb-457f-abee-f27fb45dd29c")
+    // const [deviceId, setDeviceId] = useState("29904bc142b60dce")
     const [data, setData] = useState(null)
     const [attendanceData, setAttendanceData] = useState(null)
     const [refreshing, setRefreshing] = useState(false)
 
+    let {studentData , setStudentData} = useContext(AuthContext)
+    studentData = JSON.parse(JSON.stringify(studentData))
 
     useEffect(() => {
         console.log("UseEffect entered")
-        // const retrieveData = async () => {
-        //     try {
-        //       const asyncUID = await AsyncStorage.getItem('uid')
-        //       if (asyncUID !== null) {
-        //         setUid(asyncUID)
-        //         setSharedPrefDataRead(true)
-        //       }
-        //       else {
-        //           navigation.navigate("Login")
-        //       }
-        //     } catch (error) {
-        //       alert("Some Error Occured! Please try after some time")
-        //     }
-        // };
-        // if(sharedPrefDataRead == false) {
-        //     retrieveData()
-        // }
 
-        if(uid && data==null) {
+        if(studentData.uid && data==null) {
             console.log("Fetching BasicInfo Began")
-            fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/StudentBasicInfoForService/${uid}/${accessToken}/${deviceId}/`)
+            fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/StudentBasicInfoForService/${studentData.uid}/${studentData.accessToken}/${studentData.deviceId}/`)
                 .then(response => {
+                    console.log(`https://ums.lpu.in/umswebservice/umswebservice.svc/StudentBasicInfoForService/${studentData.uid}/${studentData.accessToken}/${studentData.deviceId}/`)
                     return response.text()
                 })
                 .then(responseData => {
                     try {
                         let dataReceived = JSON.parse(responseData)
                         console.log("BasicInfoFetched")
+                        console.log(dataReceived)
                         setData(dataReceived)
                     } catch(e) {
                     }
                 })
                 .then(() => {
                     console.log("Fetching Attendance Began")
-                    fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/StudentAttendanceForServiceNew/${uid}/${accessToken}/${deviceId}`)
+                    fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/StudentAttendanceForServiceNew/${studentData.uid}/${studentData.accessToken}/${studentData.deviceId}`)
                         .then(attendResponse => {
                             return attendResponse.text()
                         })
@@ -74,9 +64,10 @@ function Dashboard({navigation}) {
                         })
                     })
         }
-        StatusBar.setBarStyle( 'light-content',true)
-        StatusBar.setBackgroundColor("#323334")
+        
     }, [attendanceData])
+
+    console.log(studentData.uid)
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true)
@@ -153,7 +144,9 @@ function Dashboard({navigation}) {
                                 <Text style={{color: '#909191', marginLeft: 25}}>{data[0].TimeTable.length} Lectures today</Text>
                             </View>
                             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-                            <Text style={{color: '#909191', marginRight: 25}}>View Time Table  <Image
+                            <Text onPress={() => navigation.navigate('TimeTable', {
+                                attendanceData: attendanceData
+                            })} style={{color: '#909191', marginRight: 25}}>View Time Table  <Image
                                 style={{width: 16, height: 16}}
                                 source={
                                     require('../assets/icons/right-icon.png')

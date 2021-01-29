@@ -1,11 +1,14 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import { View, Text, StyleSheet, ImageBackground, Image, TouchableOpacity } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
 import { TextInput } from 'react-native-gesture-handler'
 import { set } from 'react-native-reanimated'
 import LoadingComponent from '../../components/LoadingComponent'
+import AuthContext from '../../AuthContext'
 
 export default function LogInScreen() {
+
+    const { studentData, setStudentData } = useContext(AuthContext)
 
     const [uid, setUID] = useState('')
     const [pass, setPass] = useState('')
@@ -13,10 +16,65 @@ export default function LogInScreen() {
 
     function LogIn() {
         setIsLoggingIn(true)
-        console.log("Log In Clicked")
+        console.log(`DeviceId = ${studentData.deviceId}`)
         console.log(`UID = ${uid}`)
         console.log(`Pass = ${pass}`)
-        // AsyncStorage.setItem('uid', '11910547')
+        fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/CheckVersion/${studentData.deviceId}`)
+        .then(() => 
+            fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/Testing`, {
+                method: 'post',
+                headers: {
+                    'host': 'ums.lpu.in',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    UserId: `${uid}`,
+                    password: `${pass}`,
+                    Identity: `aphone`,
+                    DeviceId: `${studentData.deviceId}`,
+                    PlayerId: ``
+                })
+            })
+            .then(attendResponse => {
+                // console.log(attendResponse.text())
+                return attendResponse.text()
+            })
+            .then(response => {
+                console.log(response)
+                if(JSON.parse(response).TestingResult[0].AccessToken !== "") {
+                    const _setData = async () => {
+                        try{
+                            await AsyncStorage.setItem('uid', JSON.stringify(uid))
+                            await AsyncStorage.setItem('pass', JSON.stringify(pass))
+                            await AsyncStorage.setItem('accessToken', JSON.stringify(JSON.parse(response).TestingResult[0].AccessToken))
+                        }
+                        catch(e) {
+                            alert (e)
+                        }
+                    }
+                    _setData()
+                    setStudentData({
+                        ...studentData,
+                        uid: `${uid}`,
+                        pass: `${pass}`,
+                        accessToken: `${JSON.parse(response).TestingResult[0].AccessToken}`
+                    })
+                    console.log(uid)
+                    console.log(`Obt. Pass - ${pass}`)
+                    console.log(`Obt. AccessToken - ${JSON.parse(response).TestingResult[0].AccessToken}`)
+                    
+                    // console.log(`UID - ${AsyncStorage.getItem('uid')}`)
+                    // console.log(`Pass - ${AsyncStorage.getItem('pass')}`)
+                    // console.log(`AT - ${AsyncStorage.getItem('accessToken')}`)
+                    // console.log(`Signed In Successfully = ${JSON.parse(response).TestingResult[0].AccessToken}`)
+                }
+                else {
+                    alert(JSON.parse(response).TestingResult[0].MenuText)
+                    setIsLoggingIn(false)
+                }
+            })
+        )
+        .catch(e => alert(e))
     }
     if(isLoggingIn==false) {
         return (

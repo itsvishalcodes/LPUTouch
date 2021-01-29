@@ -1,5 +1,7 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
+
+import AuthContext from '../AuthContext'
 
 import FastImage from 'react-native-fast-image'
 
@@ -44,6 +46,8 @@ function DayBox(props) {
 }
 
 export default function TimeTableScreen({ route, navigation }) {
+    let {studentData , setStudentData} = useContext(AuthContext)
+    studentData = JSON.parse(JSON.stringify(studentData))
 
     const { attendanceData } = route.params
 
@@ -51,9 +55,9 @@ export default function TimeTableScreen({ route, navigation }) {
     const [activeDay, setActiveDay] = useState('M')
     const [timeTable, setTimeTable] = useState(null)
 
-    const uid = `11910547`
-    const accessToken = `7076e035-9ceb-457f-abee-f27fb45dd29c`
-    const deviceId = `29904bc142b60dce`
+    // const uid = `11910547`
+    // const accessToken = `7076e035-9ceb-457f-abee-f27fb45dd29c`
+    // const deviceId = `29904bc142b60dce`
  
     let courseDetails = null
 
@@ -70,7 +74,7 @@ export default function TimeTableScreen({ route, navigation }) {
 
     useEffect(() => {
         if(timeTable===null) {
-            fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/StudentTimeTableForService/${uid}/${accessToken}/${deviceId}`)
+            fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/StudentTimeTableForService/${studentData.uid}/${studentData.accessToken}/${studentData.deviceId}`)
             .then(response => {
                 return response.text()
             })
@@ -130,7 +134,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#222324'
     },
     scheduleContainer: {
-        padding: 18
+        padding: 18,
+        flex: 1
     }
 })
 

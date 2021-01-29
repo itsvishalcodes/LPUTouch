@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native'
 import FastImage from 'react-native-fast-image'
+
+import AuthContext from '../AuthContext'
 
 import AnnouncementBox from '../components/AnnouncementBox'
 
 export default function Announcement({navigation}) {
-    const uid = `11910547`
-    const accessToken = `7076e035-9ceb-457f-abee-f27fb45dd29c`
-    const deviceId = `29904bc142b60dce`
+    let {studentData , setStudentData} = useContext(AuthContext)
+    studentData = JSON.parse(JSON.stringify(studentData))
+
     const [refreshing, setRefreshing] = useState(false)
     const [announcementData, setAnnouncementData] = useState(null)
 
     useEffect(() => {
         if(announcementData==null) {
-            fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/GetAnnouncementsForServiceNew/${uid}/${accessToken}/${deviceId}/S`)
+            fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/GetAnnouncementsForServiceNew/${studentData.uid}/${studentData.accessToken}/${studentData.deviceId}/S`)
                 .then(response => {
                     return response.text()
                 })

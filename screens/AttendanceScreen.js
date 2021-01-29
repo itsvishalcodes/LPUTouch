@@ -1,11 +1,14 @@
 import React from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ScrollView, Image } from 'react-native'
 
+import AuthContext from '../AuthContext'
+
 import AttendanceScreenBox from '../components/AttendanceScreenBox'
 
 import { LineChart } from 'react-native-chart-kit'
 
 const AttendanceScreen = ({ route, navigation }) => {
+
     const screenWidth = Dimensions.get("window").width;
     const { attendanceData } = route.params
     

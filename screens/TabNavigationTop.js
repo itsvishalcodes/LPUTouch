@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Text, View, ScrollView, Linking } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icons from 'react-native-vector-icons/FontAwesome5';
 import FastImage from 'react-native-fast-image'
+
+import AuthContext from '../AuthContext'
 
 
 let readingMaterial = null
@@ -58,13 +60,12 @@ const Tab = createBottomTabNavigator();
 
 export default function TabNavigationTop() {
     const [assignmentData, setAssignmentData] = useState(null)
-    const uid = `11910547`
-    const accessToken = `7076e035-9ceb-457f-abee-f27fb45dd29c`
-    const deviceId = `29904bc142b60dce`
+    let {studentData , setStudentData} = useContext(AuthContext)
+    studentData = JSON.parse(JSON.stringify(studentData))
 
     useEffect(() => {
         if(assignmentData === null) {
-            fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/GetStudentAcademicTaskMarks/${accessToken}/${deviceId}/${uid}`)
+            fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/GetStudentAcademicTaskMarks/${studentData.accessToken}/${studentData.deviceId}/${studentData.uid}`)
                 .then(response => {
                     return response.text()
                 })
