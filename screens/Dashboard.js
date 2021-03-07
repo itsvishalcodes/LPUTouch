@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { View, Text, Button, StyleSheet, Image, RefreshControl } from 'react-native'
+import { createDrawerNavigator } from '@react-navigation/drawer'
+import Icons from 'react-native-vector-icons/FontAwesome5';
 
 import AsyncStorage from '@react-native-community/async-storage'
 import { ScrollView } from 'react-native-gesture-handler'
@@ -7,24 +9,40 @@ import { ScrollView } from 'react-native-gesture-handler'
 import LoadingComponent from '../components/LoadingComponent'
 import DashboardUpcomingLectures from '../components/DashboardUpcomingLectures'
 import DashboardContent from '../components/DashboardContent'
+import DashboardDrawer from './DashboardDrawer'
 
 import AuthContext from '../AuthContext'
 
 
-const wait = (timeout) => {
-    return new Promise(resolve => {
-        setTimeout(resolve, timeout)
-    })
-}
+// const Drawer = createDrawerNavigator();
+
+// function SideDrawer() {
+//   return (
+//       <Drawer.Navigator drawerStyle={{
+//           backgroundColor: '#222324'
+//       }}
+//       drawerContentOptions={{
+//           inactiveTintColor: "#fff"
+//       }}
+//       >
+//         <Drawer.Screen name="Dashboard" component={Dashboard}
+//           options={{
+//               drawerIcon: ({focused, size}) => (
+//                   <Icons name='tachometer-alt' size={size} color={focused ? '#7cc' : '#ccc'} />
+//               )
+//           }}
+//         />
+//       </Drawer.Navigator>
+//   );
+// }
 
 function Dashboard({navigation}) {
     console.log("Dashboard started")
-    // const [uid, setUid] = useState('11910547')
-    // const [accessToken, setAccessToken] = useState("7076e035-9ceb-457f-abee-f27fb45dd29c")
-    // const [deviceId, setDeviceId] = useState("29904bc142b60dce")
     const [data, setData] = useState(null)
     const [attendanceData, setAttendanceData] = useState(null)
-    const [refreshing, setRefreshing] = useState(false)
+    // const [refreshing, setRefreshing] = useState(false)
+
+    let dataReceived = null
 
     let {studentData , setStudentData} = useContext(AuthContext)
     studentData = JSON.parse(JSON.stringify(studentData))
@@ -32,7 +50,6 @@ function Dashboard({navigation}) {
     useEffect(() => {
         console.log("UseEffect entered")
 
-        if(studentData.uid && data==null) {
             console.log("Fetching BasicInfo Began")
             fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/StudentBasicInfoForService/${studentData.uid}/${studentData.accessToken}/${studentData.deviceId}/`)
                 .then(response => {
@@ -40,39 +57,51 @@ function Dashboard({navigation}) {
                     return response.text()
                 })
                 .then(responseData => {
-                    try {
-                        let dataReceived = JSON.parse(responseData)
-                        console.log("BasicInfoFetched")
-                        console.log(dataReceived)
-                        setData(dataReceived)
-                    } catch(e) {
-                    }
+                    dataReceived = JSON.parse(responseData)
+                    console.log("BasicInfoFetched")
+                    setData(dataReceived)
+                    console.log('Stored Data - ', data)
+                    console.log('Received Data - ', dataReceived)
                 })
                 .then(() => {
-                    console.log("Fetching Attendance Began")
-                    fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/StudentAttendanceForServiceNew/${studentData.uid}/${studentData.accessToken}/${studentData.deviceId}`)
-                        .then(attendResponse => {
-                            return attendResponse.text()
+                    if(dataReceived[0].Error.length === 0) {
+                        console.log("Fetching Attendance Began")
+                        fetch(`https://ums.lpu.in/umswebservice/umswebservice.svc/StudentAttendanceForServiceNew/${studentData.uid}/${studentData.accessToken}/${studentData.deviceId}`)
+                            .then(attendResponse => {
+                                return attendResponse.text()
+                            })
+                            .then(attendResponseData => {
+                                try{
+                                    let attendDataReceived = JSON.parse(attendResponseData)
+                                    console.log("Attendance Fetched")
+                                    setAttendanceData(attendDataReceived)
+                                } catch(e) {
+                                }
+                            })
+                    }
+                    else{
+                        console.log("Session Expired Call")
+                        try{
+                            AsyncStorage.removeItem('uid')
+                            console.log('Removed Item UID because of session Expire')
+                        }
+                        catch(e) {
+                            alert(e)
+                        }
+                        // alert(data[0].Error)
+                        setStudentData({
+                            uid: null,
+                            pass: null,
+                            accessToken: null,
+                            deviceId: null
                         })
-                        .then(attendResponseData => {
-                            try{
-                                let attendDataReceived = JSON.parse(attendResponseData)
-                                console.log("Attendance Fetched")
-                                setAttendanceData(attendDataReceived)
-                            } catch(e) {
-                            }
-                        })
+                    }
                     })
-        }
         
-    }, [attendanceData])
+    }, [])
 
     console.log(studentData.uid)
 
-    const onRefresh = React.useCallback(() => {
-        setRefreshing(true)
-        wait(2000).then(() => setRefreshing(false))
-    })
     
     let courseDetails = {}
     function getCourseName(courseCode) {
@@ -156,7 +185,7 @@ function Dashboard({navigation}) {
                     </View>
                 </View>
                 <View style={styles.DashboardContent}>
-                    <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} >
+                    <ScrollView>
                         <DashboardContent attendanceData={attendanceData} navigationway={{navigation}} announcementCount={data[0].AnnouncementCount} cgpa={data[0].CGPA} assignmentCount={data[0].AssignmentCount} 
                         aggAttendance={data[0].AggAttendance.split(" ")[0]} messageCount={data[0].MyMessagesCount} timeTable={data[0].TimeTable.length} />
                     </ScrollView>

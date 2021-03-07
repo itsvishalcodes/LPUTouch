@@ -73,7 +73,7 @@ function DashboardContent(props) {
                         <Text style={styles.tileName}>Results</Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                 onPress={() => props.navigationway.navigation.navigate('Marks')}
                     style={styles.DashboardTileShort}
                     underlayColor='#fff'
@@ -89,7 +89,7 @@ function DashboardContent(props) {
                     <View style={styles.tileTextContainerShort}>
                         <Text style={{fontSize: 19, color: '#929394'}}>Marks</Text>
                     </View>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
             <View style={styles.TileContainerRight}>
                 <TouchableOpacity
@@ -181,7 +181,7 @@ function DashboardContent(props) {
                     }}
                     style={{
                         padding: 15,
-                        backgroundColor: "#ff0000",
+                        backgroundColor: "#ff6666",
                         borderRadius: 8,
                         height: 80,
                         marginBottom: 20,
@@ -197,7 +197,7 @@ function DashboardContent(props) {
                     />
                     </View>
                     <View style={styles.tileTextContainerShort}>
-                        <Text style={{fontSize: 19, color: '#929394'}}>Log Out</Text>
+                        <Text style={{fontSize: 19, color: '#fff'}}>Log Out</Text>
                     </View>
                 </TouchableOpacity>
             </View>

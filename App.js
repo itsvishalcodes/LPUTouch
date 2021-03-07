@@ -34,7 +34,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import AttendanceScreen from './screens/AttendanceScreen'
-import Dashboard from './screens/Dashboard'
+// import Dashboard from './screens/Dashboard'
 import AnnouncementView from './screens/AnnouncementView'
 import Announcement from './screens/Announcement'
 import Message from './screens/Message'
@@ -43,6 +43,7 @@ import TabNavigationTop from './screens/TabNavigationTop'
 import TimeTableScreen from './screens/TimeTableScreen'
 import Results from './screens/ResultsScreen'
 import Marks from './screens/MarksScreen'
+import Dashboard from './screens/Dashboard'
 
 import LogInScreen from './screens/loginScreens/LogInScreen'
 import LoadingComponent from './components/LoadingComponent'
@@ -141,14 +142,13 @@ const App = () => {
     )
   }
   else {
-    console.log("This also called")
     return (
       <NavigationContainer>
         <AuthContext.Provider value={{studentData, setStudentData}}>
-          <Stack.Navigator initialRouteName={"Dashboard"}>
+          <Stack.Navigator initialRouteName={"Dashboard"} >
             <Stack.Screen name="Dashboard" component={Dashboard}
               options={{ 
-                title: "LPU Touch",
+                title: "Dashboard",
                 headerStyle: {
                   backgroundColor: '#323334',
                   elevation: 0,
