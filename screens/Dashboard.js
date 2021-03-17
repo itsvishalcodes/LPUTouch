@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { View, Text, Button, StyleSheet, Image, RefreshControl } from 'react-native'
+import React, { useRef, useState, useEffect, useContext } from 'react'
+import { View, Text, Button, StyleSheet, Image, RefreshControl, DrawerLayoutAndroid } from 'react-native'
 import { createDrawerNavigator } from '@react-navigation/drawer'
 import Icons from 'react-native-vector-icons/FontAwesome5';
 
@@ -46,6 +46,11 @@ function Dashboard({navigation}) {
 
     let {studentData , setStudentData} = useContext(AuthContext)
     studentData = JSON.parse(JSON.stringify(studentData))
+
+    
+  const drawer = useRef(null);
+
+    
 
     useEffect(() => {
         console.log("UseEffect entered")
@@ -100,6 +105,14 @@ function Dashboard({navigation}) {
         
     }, [])
 
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+            headerLeft: () => (
+                <Icons name={"book-reader"} size={40} color={'#fff'} />
+            )
+        })
+    }, [navigation])
+
     console.log(studentData.uid)
 
     
@@ -122,6 +135,15 @@ function Dashboard({navigation}) {
         )
     }
     else {
+        const navigationView = () => (
+            <View style={{flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16, backgroundColor: "#323334"}}>
+              <Text style={{padding: 16, fontSize: 15, textAlign: 'center'}}>I'm in the Drawer!</Text>
+              <Button
+                title="Close drawer"
+                onPress={() => drawer.current.closeDrawer()}
+              />
+            </View>
+        );
         console.log("Rendered")
         let upcomingLectureData = null
         if(data[0].TimeTable.length == 0) {
@@ -137,60 +159,67 @@ function Dashboard({navigation}) {
             })
         }
         return (
-            <View style={styles.DashboardContainer}>
-                <View style={styles.DashboardHeader}>
-                    <View style={{flexDirection: 'row', flex: 3}}>
-                        <View style={{flex: 1, marginTop: 5, marginLeft: 48, justifyContent: 'flex-start', alignItems: 'flex-start'}}>
-                            <Text style={{fontWeight: 'bold', color: '#909191', fontFamily: 'ProductSans'}}>Howdy,</Text>
-                            <Text numberOfLines={1} ellipsizeMode={'tail'} style={{color: '#909191', fontSize: 17, fontFamily: 'Product-Sans-Regular'}}>{data === null ? null : data[0].StudentName}</Text>
-                        </View>
-                        <View style={{flex: 1, marginTop: -8, marginRight: 48, justifyContent: 'center', alignItems: 'flex-end'}}>
-                            <View style={{width: 40, height: 40, borderRadius:20, backgroundColor: "#fff", marginBottom: 5}}>
-                                <Image
-                                    style = {{width: 40, height: 40, borderRadius: 20}}
-                                    source={
-                                    data===null ? null : 
-                                    {
-                                        uri: `data:image/png;base64,${data[0].StudentPicture}`
-                                    }}
-                                ></Image>
+            <DrawerLayoutAndroid
+                ref={drawer}
+                drawerWidth={300}
+                drawerPosition={"left"}
+                renderNavigationView={navigationView}
+            >
+                <View style={styles.DashboardContainer}>
+                    <View style={styles.DashboardHeader}>
+                        <View style={{flexDirection: 'row', flex: 3}}>
+                            <View style={{flex: 1, marginTop: 5, marginLeft: 48, justifyContent: 'flex-start', alignItems: 'flex-start'}}>
+                                <Text style={{fontWeight: 'bold', color: '#909191', fontFamily: 'ProductSans'}}>Howdy,</Text>
+                                <Text numberOfLines={1} ellipsizeMode={'tail'} style={{color: '#909191', fontSize: 17, fontFamily: 'Product-Sans-Regular'}}>{data === null ? null : data[0].StudentName}</Text>
                             </View>
-                            <Text onPress={() => navigation.navigate("Home")} style={{color: '#909191'}}>View Profile  <Image
-                                style={{width: 16, height: 16}}
-                                source={
-                                    require('../assets/icons/right-icon.png')
-                                }
-                            /></Text>
+                            <View style={{flex: 1, marginTop: -8, marginRight: 48, justifyContent: 'center', alignItems: 'flex-end'}}>
+                                <View style={{width: 40, height: 40, borderRadius:20, backgroundColor: "#fff", marginBottom: 5}}>
+                                    <Image
+                                        style = {{width: 40, height: 40, borderRadius: 20}}
+                                        source={
+                                        data===null ? null : 
+                                        {
+                                            uri: `data:image/png;base64,${data[0].StudentPicture}`
+                                        }}
+                                    ></Image>
+                                </View>
+                                <Text onPress={() => drawer.current.openDrawer()} style={{color: '#909191'}}>View Profile  <Image
+                                    style={{width: 16, height: 16}}
+                                    source={
+                                        require('../assets/icons/right-icon.png')
+                                    }
+                                /></Text>
+                            </View>
+                        </View>
+                        <View style={{flex: 4,}}>
+                            <ScrollView horizontal={true}>
+                                {upcomingLectureData}
+                            </ScrollView>
+                        </View>
+                        <View style={{flex: 2, flexDirection: 'row', justifyContent: 'center'}}>
+                                <View style={{flex: 1, justifyContent: 'center'}}>
+                                    <Text style={{color: '#909191', marginLeft: 25}}>{data[0].TimeTable.length} Lectures today</Text>
+                                </View>
+                                <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
+                                <Text onPress={() => navigation.navigate('TimeTable', {
+                                    attendanceData: attendanceData
+                                })} style={{color: '#909191', marginRight: 25}}>View Time Table  <Image
+                                    style={{width: 16, height: 16}}
+                                    source={
+                                        require('../assets/icons/right-icon.png')
+                                    }
+                                /></Text>
+                                </View>
                         </View>
                     </View>
-                    <View style={{flex: 4,}}>
-                        <ScrollView horizontal={true}>
-                            {upcomingLectureData}
+                    <View style={styles.DashboardContent}>
+                        <ScrollView>
+                            <DashboardContent attendanceData={attendanceData} navigationway={{navigation}} announcementCount={data[0].AnnouncementCount} cgpa={data[0].CGPA} assignmentCount={data[0].AssignmentCount} 
+                            aggAttendance={data[0].AggAttendance.split(" ")[0]} messageCount={data[0].MyMessagesCount} timeTable={data[0].TimeTable.length} />
                         </ScrollView>
                     </View>
-                    <View style={{flex: 2, flexDirection: 'row', justifyContent: 'center'}}>
-                            <View style={{flex: 1, justifyContent: 'center'}}>
-                                <Text style={{color: '#909191', marginLeft: 25}}>{data[0].TimeTable.length} Lectures today</Text>
-                            </View>
-                            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-end'}}>
-                            <Text onPress={() => navigation.navigate('TimeTable', {
-                                attendanceData: attendanceData
-                            })} style={{color: '#909191', marginRight: 25}}>View Time Table  <Image
-                                style={{width: 16, height: 16}}
-                                source={
-                                    require('../assets/icons/right-icon.png')
-                                }
-                            /></Text>
-                            </View>
-                    </View>
                 </View>
-                <View style={styles.DashboardContent}>
-                    <ScrollView>
-                        <DashboardContent attendanceData={attendanceData} navigationway={{navigation}} announcementCount={data[0].AnnouncementCount} cgpa={data[0].CGPA} assignmentCount={data[0].AssignmentCount} 
-                        aggAttendance={data[0].AggAttendance.split(" ")[0]} messageCount={data[0].MyMessagesCount} timeTable={data[0].TimeTable.length} />
-                    </ScrollView>
-                </View>
-            </View>
+            </DrawerLayoutAndroid>
         )
     }
 }

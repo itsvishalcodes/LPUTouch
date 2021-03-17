@@ -67,6 +67,7 @@ const App = () => {
     deviceId: null
   })
 
+
   useEffect(() => {
     const bootstrapAsync = async () => {
       try {
@@ -102,6 +103,8 @@ const App = () => {
     }
     bootstrapAsync()
   }, [])
+
+ 
 
   if(isFetchingUID == true) {
     return (
@@ -358,7 +361,6 @@ const App = () => {
           </Stack.Navigator>
         </AuthContext.Provider>
       </NavigationContainer>
-
     );
   }
   

@@ -51,8 +51,12 @@ export default function TimeTableScreen({ route, navigation }) {
 
     const { attendanceData } = route.params
 
+    const daysOfWeek = [ "S", "M", "Tu", "W", "Th", "F", "S"]
 
-    const [activeDay, setActiveDay] = useState('M')
+    const today = new Date()
+    const n = today.getDay()
+
+    const [activeDay, setActiveDay] = useState(daysOfWeek[n])
     const [timeTable, setTimeTable] = useState(null)
 
     // const uid = `11910547`
@@ -105,6 +109,7 @@ export default function TimeTableScreen({ route, navigation }) {
                 return <ScheduleBox courseCode={filteredElem.Description.split('/')[1].split(':')[2]} courseName={getCourseName(filteredElem.Description.split('/')[1].split(':')[2]).courseName} roomNo={filteredElem.Description.split('/')[2]} courseAttendance={getCourseName(filteredElem.Description.split('/')[1].split(':')[2]).courseAttendance} startTime={filteredElem.AttendanceTime.split('-')[0]} endTime={filteredElem.AttendanceTime.split('-')[1].split(' ')[0]} timeofday={filteredElem.AttendanceTime.split('-')[1].split(' ')[1]}  />
             }     
         )
+        
         return (
             <View style={styles.TimeTableContainer}>
                 <View style={{width: '100%', height:120, backgroundColor: '#323334', borderBottomLeftRadius: 30, borderBottomRightRadius: 30, padding: 20}}>
