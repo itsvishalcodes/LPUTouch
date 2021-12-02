@@ -54,7 +54,7 @@ export default function TimeTableScreen({ route, navigation }) {
     const daysOfWeek = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
     const today = new Date()
-    const n = d.getDay()
+    const n = today.getDay()
 
     const [activeDay, setActiveDay] = useState(daysOfWeek[n][0])
     const [timeTable, setTimeTable] = useState(null)
