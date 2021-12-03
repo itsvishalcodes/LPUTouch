@@ -77,9 +77,21 @@ export default function LogInScreen() {
         .catch(e => alert(e))
     }
     if(isLoggingIn==false) {
+        let bgImage = Math.floor(Math.random() * 10)
+        const img1 = require(`../../assets/bg-images/1.jpg`)
+        const img2 = require(`../../assets/bg-images/2.jpg`)
+        const img3 = require(`../../assets/bg-images/3.jpg`)
+        const img4 = require(`../../assets/bg-images/4.jpg`)
+        const img5 = require(`../../assets/bg-images/5.jpg`)
+        const img6 = require(`../../assets/bg-images/6.jpg`)
+        const img7 = require(`../../assets/bg-images/7.jpg`)
+        const img8 = require(`../../assets/bg-images/8.jpg`)
+        const img9 = require(`../../assets/bg-images/9.jpg`)
+        const img10 = require(`../../assets/bg-images/10.jpg`)
+        const bgArray = [img1, img2, img3, img4, img5, img6, img7, img8, img9, img10]
         return (
             <View style={styles.logInContainer}>
-                <ImageBackground style={{ width: '100%', height: '100%' }} source={require('../../assets/bg-images/9.jpg')}>   
+                <ImageBackground style={{ width: '100%', height: '100%' }} source={bgArray[bgImage]}>   
                     <View style={styles.logInBoxContainer}>
                         <View style={styles.logInBox}>
                             <Image style={styles.logInBoxLogo} source={require('../../assets/Loading_below_image.png')} />
